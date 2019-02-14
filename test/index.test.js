@@ -2,7 +2,6 @@ const test = require(`ava`);
 const sinon = require(`sinon`);
 const uuid = require(`uuid`);
 
-const listpodcasts = require(`..`).listpodcasts;
 const getitunesrssfeed = require(`..`).getitunesrssfeed;
 
 const Datastore = require('@google-cloud/datastore');
@@ -30,11 +29,12 @@ const expectedItunesRSSXMLResult = `<?xml version="1.0" encoding="utf-8"?>
     <itunes:category text="Arts"/>
     <itunes:category text="Sport"/>
     <itunes:explicit>no</itunes:explicit>
+    <itunes:new-feed-url>http://new-feed-url.com</itunes:new-feed-url>
     <item>
-      <title>title test</title>
-      <itunes:author>author test</itunes:author>
-      <itunes:subtitle>subtitle test</itunes:subtitle>
-      <itunes:summary>summary test</itunes:summary>
+      <title>First Episode</title>
+      <itunes:author>First episode author</itunes:author>
+      <itunes:subtitle>First episode subtitle</itunes:subtitle>
+      <itunes:summary>First episode summary</itunes:summary>
       <itunes:image href="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"/>
       <enclosure length="8727310" type="audio/mp3" url="http://example.com/podcasts/everything/AllAboutEverythingEpisode3.mp3"/>
       <guid>http://example.com/podcasts/everything/AllAboutEverythingEpisode3.m4a</guid>
@@ -43,10 +43,10 @@ const expectedItunesRSSXMLResult = `<?xml version="1.0" encoding="utf-8"?>
       <itunes:explicit>no</itunes:explicit>
     </item>
     <item>
-      <title>title 2</title>
-      <itunes:author>author 2</itunes:author>
-      <itunes:subtitle>subtitle 2</itunes:subtitle>
-      <itunes:summary>summary 2</itunes:summary>
+      <title>Second Episode</title>
+      <itunes:author>Second episode author</itunes:author>
+      <itunes:subtitle>Second episode subtitle</itunes:subtitle>
+      <itunes:summary>Second episode summary</itunes:summary>
       <itunes:image href="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"/>
       <enclosure length="8727310" type="audio/mp3" url="http://example.com/podcasts/everything/AllAboutEverythingEpisode3.mp3"/>
       <guid>http://example.com/podcasts/everything/AllAboutEverythingEpisode3.m4a</guid>
@@ -60,15 +60,15 @@ const expectedItunesRSSXMLResult = `<?xml version="1.0" encoding="utf-8"?>
 const datastorePodcastItems = [
   {
     length: 8727310,
-    title: 'title test',
+    title: 'First Episode',
     guid: 'http://example.com/podcasts/everything/AllAboutEverythingEpisode3.m4a',
     type: 'audio/mp3',
     explicit: false,
     duration: '1:20:00',
     pub_date: '2019-02-10T01:36:34.540Z',
-    summary: 'summary test',
-    subtitle: 'subtitle test',
-    author: 'author test',
+    summary: 'First episode summary',
+    subtitle: 'First episode subtitle',
+    author: 'First episode author',
     url: 'http://example.com/podcasts/everything/AllAboutEverythingEpisode3.mp3',
     image: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
   },
@@ -78,13 +78,13 @@ const datastorePodcastItems = [
     explicit: false,
     duration: '1:20:00',
     pub_date: '2019-02-10T01:36:34.540Z',
-    summary: 'summary 2',
-    subtitle: 'subtitle 2',
-    author: 'author 2',
+    summary: 'Second episode summary',
+    subtitle: 'Second episode subtitle',
+    author: 'Second episode author',
     url: 'http://example.com/podcasts/everything/AllAboutEverythingEpisode3.mp3',
     image: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
     length: 8727310,
-    title: 'title 2'
+    title: 'Second Episode'
   }
 ];
 
@@ -101,7 +101,8 @@ const datastorePodcastMetadata = {
   itunes_owner_email: 'oleguris@gmail.com',
   itunes_image: 'http://example.com/podcasts/everything/AllAboutEverything.jpg',
   itunes_categories: 'Music,Arts,Sport',
-  itunes_explicit: false
+  itunes_explicit: false,
+  itunes_new_feed_url: 'http://new-feed-url.com'
 };
 
 test.cb(`getitunesrssfeed: should print XML`, t => {

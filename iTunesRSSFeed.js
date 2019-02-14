@@ -22,7 +22,8 @@ exports.createiTunesRSSFeed = (podcastMetadata, items) => {
                 },
                 'itunes:image': { '@href': podcastMetadata.itunes_image },
                 'itunes:category': podcastMetadata.itunes_categories.split(',').map(category => { return { '@text': category } }),
-                'itunes:explicit': podcastMetadata.itunes_explicit ? 'yes' : 'no'
+                'itunes:explicit': podcastMetadata.itunes_explicit ? 'yes' : 'no',
+                'itunes:new-feed-url': podcastMetadata.itunes_new_feed_url
             }
         }
     };
