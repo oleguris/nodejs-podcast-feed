@@ -58,11 +58,11 @@ exports.getitunesrssfeed = (req, res, injectedDatastore = datastore) => {
     console.log(podcastEpisodeItems);
 
     if (!podcastMetadata) {
-      throw new Error(`No entity found for key ${key.path.join('/')}.`);
+      throw new Error(`No podcast found for key ${key.path.join('/')}.`);
     }
 
     if (!podcastEpisodeItems) {
-      throw new Error(`No entity found for kind ${podcastEpisodeKind}.`);
+      throw new Error(`No podcast episodes found for kind ${podcastEpisodeKind}.`);
     }
 
     console.log('returned mock items: ', podcastEpisodeItems.length);

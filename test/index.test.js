@@ -125,7 +125,24 @@ const datastorePodcastMetadata = {
   itunes_new_feed_url: 'http://new-feed-url.com'
 };
 
-test.cb(`getitunesrssfeed: should print XML`, t => {
+const podcastEpisodeKind = 'podcast_episode';
+const podcastMetadataKind = 'podcast';
+const podcastMetadataKey = 'happy-hour-podcast';
+
+let datastoreRunQueryStub;
+let datastoreGetStub;
+let queryStub;
+let podcastMetadataComposedKey;
+
+
+test.before(t => {
+  datastoreRunQueryStub = sinon.stub(datastore, 'runQuery');
+  datastoreGetStub = sinon.stub(datastore, 'get');
+  queryStub = sinon.stub(datastore, 'createQuery');
+  podcastMetadataComposedKey = datastore.key([podcastMetadataKind, podcastMetadataKey]);
+});
+
+test.cb(`getitunesrssfeed: should return a valid XML RSS feed`, t => {
   // Mock ExpressJS 'req' and 'res' parameters
   const name = uuid.v4();
   const req = {
@@ -137,27 +154,65 @@ test.cb(`getitunesrssfeed: should print XML`, t => {
   const responseStatusStub = {send: sinon.stub()};
   res.status.withArgs(200).returns(responseStatusStub);
 
-  const datastoreRunQueryStub = sinon.stub(datastore, 'runQuery');
   datastoreRunQueryStub.resolves([datastorePodcastItems]);
 
-  const datastoreGetStub = sinon.stub(datastore, 'get');
   datastoreGetStub.resolves([datastorePodcastMetadata]);
 
   // .createQuery(kind).order('pub_date');
-  const queryStub = sinon.stub(datastore, 'createQuery');
   queryStub.returns({order: (param)=>{param}});
 
-  t.plan(2);
+  t.plan(3);
 
   // Call tested function
   getitunesrssfeed(req, res, datastore).then(()=>{
     console.log('test assertion');
+
+    t.true(res.set.called);
+
     // Verify behavior of tested function
     t.true(responseStatusStub.send.calledOnce);
     
     console.log(responseStatusStub.send.firstCall.args[0]);
   
     t.deepEqual(responseStatusStub.send.firstCall.args[0], expectedItunesRSSXMLResult);
+    
+    t.end();
+  });
+});
+
+test.cb(`getitunesrssfeed: should reject and return 500 when podcast metadata not found`, t => {
+  // Mock ExpressJS 'req' and 'res' parameters
+  const name = uuid.v4();
+  const req = {
+    body: {
+      name: name,
+    },
+  };
+  const res = {set: sinon.stub(), status: sinon.stub()};
+  const responseStatusStub = {send: sinon.stub()};
+  res.status.withArgs(500).returns(responseStatusStub);
+
+  datastoreRunQueryStub.resolves([datastorePodcastItems]);
+
+  datastoreGetStub.resolves([]);
+
+  // .createQuery(kind).order('pub_date');
+  queryStub.returns({order: (param)=>{param}});
+
+  t.plan(3);
+
+  // Call tested function
+  getitunesrssfeed(req, res, datastore).catch(()=>{
+    console.log('test assertion');
+
+    t.false(res.set.called);
+
+    // Verify behavior of tested function
+    t.true(responseStatusStub.send.calledOnce);
+    
+    console.log(responseStatusStub.send.firstCall.args[0]);
+  
+    t.deepEqual(responseStatusStub.send.firstCall.args[0], `No podcast found for key ${podcastMetadataComposedKey.path.join('/')}.`);
     
     t.end();
   });
