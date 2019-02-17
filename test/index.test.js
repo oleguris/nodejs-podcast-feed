@@ -134,8 +134,17 @@ let datastoreGetStub;
 let queryStub;
 let podcastMetadataComposedKey;
 
+let req;
+
 
 test.before(t => {
+  const name = uuid.v4();
+  req = {
+    body: {
+      name: name,
+    },
+  };
+
   datastoreRunQueryStub = sinon.stub(datastore, 'runQuery');
   datastoreGetStub = sinon.stub(datastore, 'get');
   queryStub = sinon.stub(datastore, 'createQuery');
@@ -144,30 +153,29 @@ test.before(t => {
 
 test.cb(`getitunesrssfeed: should return a valid XML RSS feed`, t => {
   // Mock ExpressJS 'req' and 'res' parameters
-  const name = uuid.v4();
-  const req = {
-    body: {
-      name: name,
-    },
-  };
-  const res = {set: sinon.stub(), status: sinon.stub()};
+
+  const res = {set: ()=>{}, status: sinon.stub()};
   const responseStatusStub = {send: sinon.stub()};
   res.status.withArgs(200).returns(responseStatusStub);
+
+  // Mock response.set() function to verify it was called 5 times
+  var mockResponse = sinon.mock(res);
+  mockResponse.expects('set').exactly(5);
 
   datastoreRunQueryStub.resolves([datastorePodcastItems]);
 
   datastoreGetStub.resolves([datastorePodcastMetadata]);
 
-  // .createQuery(kind).order('pub_date');
   queryStub.returns({order: (param)=>{param}});
 
-  t.plan(3);
+  t.plan(2);
 
   // Call tested function
   getitunesrssfeed(req, res, datastore).then(()=>{
     console.log('test assertion');
 
-    t.true(res.set.called);
+    // Verify response.set() mocked function was called 5 times
+    mockResponse.verify();
 
     // Verify behavior of tested function
     t.true(responseStatusStub.send.calledOnce);
@@ -182,30 +190,30 @@ test.cb(`getitunesrssfeed: should return a valid XML RSS feed`, t => {
 
 test.cb(`getitunesrssfeed: should reject and return 500 when podcast metadata not found`, t => {
   // Mock ExpressJS 'req' and 'res' parameters
-  const name = uuid.v4();
-  const req = {
-    body: {
-      name: name,
-    },
-  };
-  const res = {set: sinon.stub(), status: sinon.stub()};
+
+  const res = {set: ()=>{}, status: sinon.stub()};
   const responseStatusStub = {send: sinon.stub()};
   res.status.withArgs(500).returns(responseStatusStub);
 
+  // Mock response.set() function to verify it was not called
+  var mockResponse = sinon.mock(res);
+  mockResponse.expects('set').never();
+
   datastoreRunQueryStub.resolves([datastorePodcastItems]);
 
+  // Resolving with empty result as if metadata was not found
   datastoreGetStub.resolves([]);
 
-  // .createQuery(kind).order('pub_date');
   queryStub.returns({order: (param)=>{param}});
 
-  t.plan(3);
+  t.plan(2);
 
   // Call tested function
   getitunesrssfeed(req, res, datastore).catch(()=>{
     console.log('test assertion');
 
-    t.false(res.set.called);
+    // Verify response.set() mocked function was called 5 times
+    mockResponse.verify();
 
     // Verify behavior of tested function
     t.true(responseStatusStub.send.calledOnce);
@@ -213,6 +221,45 @@ test.cb(`getitunesrssfeed: should reject and return 500 when podcast metadata no
     console.log(responseStatusStub.send.firstCall.args[0]);
   
     t.deepEqual(responseStatusStub.send.firstCall.args[0], `No podcast found for key ${podcastMetadataComposedKey.path.join('/')}.`);
+    
+    t.end();
+  });
+});
+
+
+test.cb(`getitunesrssfeed: should reject and return 500 when podcast episodes not found`, t => {
+  // Mock ExpressJS 'req' and 'res' parameters
+  
+  const res = {set: ()=>{}, status: sinon.stub()};
+  const responseStatusStub = {send: sinon.stub()};
+  res.status.withArgs(500).returns(responseStatusStub);
+
+  // Mock response.set() function to verify it was not called
+  var mockResponse = sinon.mock(res);
+  mockResponse.expects('set').never();
+
+  datastoreRunQueryStub.resolves([]);
+
+  // Resolving with empty result as if metadata was not found
+  datastoreGetStub.resolves([datastorePodcastMetadata]);
+
+  queryStub.returns({order: (param)=>{param}});
+
+  t.plan(2);
+
+  // Call tested function
+  getitunesrssfeed(req, res, datastore).catch(()=>{
+    console.log('test assertion');
+
+    // Verify response.set() mocked function was called 5 times
+    mockResponse.verify();
+
+    // Verify behavior of tested function
+    t.true(responseStatusStub.send.calledOnce);
+    
+    console.log(responseStatusStub.send.firstCall.args[0]);
+  
+    t.deepEqual(responseStatusStub.send.firstCall.args[0], `No podcast episodes found for kind ${podcastEpisodeKind}.`);
     
     t.end();
   });
