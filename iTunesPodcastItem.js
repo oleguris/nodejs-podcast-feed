@@ -1,10 +1,14 @@
 exports.createiTunesPodcastItem = (datastoreItem) => {
 
     const contents = {
+        'itunes:episodeType': datastoreItem.episode_type,
+        'itunes:title': datastoreItem.itunes_title,
         'title': datastoreItem.title,
         'itunes:author': datastoreItem.author,
         'itunes:subtitle': datastoreItem.subtitle,
         'itunes:summary': datastoreItem.summary,
+        'description': datastoreItem.description,
+        'content:encoded': datastoreItem.content_encoded,
         'itunes:image': { '@href': datastoreItem.image },
         'enclosure': {
             '@length': datastoreItem.length,

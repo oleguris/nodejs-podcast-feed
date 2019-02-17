@@ -6,7 +6,9 @@ exports.createiTunesRSSFeed = (podcastMetadata, items) => {
 
     let rssFeedXML = {
         'rss': {
-            '@verision': '2.0', '@xmlns:itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+            '@version': '2.0',
+            '@xmlns:itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+            '@xmlns:content': 'http://purl.org/rss/1.0/modules/content/',
             'channel': {
                 'title': podcastMetadata.title,
                 'link': podcastMetadata.link,
@@ -16,11 +18,13 @@ exports.createiTunesRSSFeed = (podcastMetadata, items) => {
                 'itunes:author': podcastMetadata.itunes_author,
                 'itunes:summary': podcastMetadata.itunes_summary,
                 'description': podcastMetadata.description,
+                'itunes:type': podcastMetadata.itunes_type,
                 'itunes:owner': {
                     'itunes:name': podcastMetadata.itunes_owner_name,
                     'itunes:email': podcastMetadata.itunes_owner_email
                 },
                 'itunes:image': { '@href': podcastMetadata.itunes_image },
+                'itunes:keywords': podcastMetadata.itunes_keywords,
                 'itunes:category': podcastMetadata.itunes_categories.split(',').map(category => { return { '@text': category } }),
                 'itunes:explicit': podcastMetadata.itunes_explicit ? 'yes' : 'no',
                 'itunes:new-feed-url': podcastMetadata.itunes_new_feed_url

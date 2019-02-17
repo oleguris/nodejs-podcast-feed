@@ -68,7 +68,13 @@ exports.getitunesrssfeed = (req, res, injectedDatastore = datastore) => {
     console.log('returned mock items: ', podcastEpisodeItems.length);
 
     const xml = createiTunesRSSFeed(podcastMetadata, podcastEpisodeItems);
-    res.send(xml);
+
+    res.set('Content-Type', 'text/xml; charset=utf-8');
+    res.set('Cache-Control', 's-maxage=0, max-age=0');
+    res.set('Pragma', 'no-cache');
+    res.set('Connection', 'keep-alive');
+    res.set('Vary', 'Accept-Encoding');
+    res.status(200).send(xml);
 
   }).catch(err => {
     console.error(err);
