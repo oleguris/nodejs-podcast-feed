@@ -34,6 +34,7 @@ const expectedItunesRSSXMLResult = `<?xml version="1.0" encoding="utf-8"?>
     <itunes:new-feed-url>http://new-feed-url.com</itunes:new-feed-url>
     <item>
       <itunes:episodeType>full</itunes:episodeType>
+      <itunes:episode>1</itunes:episode>
       <itunes:title>First Episode</itunes:title>
       <title>First Episode</title>
       <itunes:author>First episode author</itunes:author>
@@ -50,6 +51,7 @@ const expectedItunesRSSXMLResult = `<?xml version="1.0" encoding="utf-8"?>
     </item>
     <item>
       <itunes:episodeType>full</itunes:episodeType>
+      <itunes:episode>2</itunes:episode>
       <itunes:title>Second Episode</itunes:title>
       <title>Second Episode</title>
       <itunes:author>Second episode author</itunes:author>
@@ -71,6 +73,7 @@ const datastorePodcastItems = [
   {
     length: 8727310,
     episode_type: 'full',
+    itunes_episode: 1,
     itunes_title: 'First Episode',
     title: 'First Episode',
     guid: 'http://example.com/podcasts/everything/AllAboutEverythingEpisode3.m4a',
@@ -88,6 +91,7 @@ const datastorePodcastItems = [
   },
   {
     episode_type: 'full',
+    itunes_episode: 2,
     guid: 'http://example.com/podcasts/everything/AllAboutEverythingEpisode3.m4a',
     type: 'audio/mpeg',
     explicit: false,

@@ -2,6 +2,7 @@ exports.createiTunesPodcastItem = (datastoreItem) => {
 
     const contents = {
         'itunes:episodeType': datastoreItem.episode_type,
+        'itunes:episode': datastoreItem.itunes_episode,
         'itunes:title': datastoreItem.itunes_title,
         'title': datastoreItem.title,
         'itunes:author': datastoreItem.author,

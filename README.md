@@ -8,7 +8,7 @@ It allows list podcasts stored in Cloud Datastore from a lightweight Cloud Funct
 
 You can check deployed version of podcast RSS feed here: https://europe-west1-happy-hour-231301.cloudfunctions.net/getitunesrssfeed
 
-And if you like eelgant and stylish House music subscribe to iTunes podcast: https://itunes.apple.com/us/podcast/happy-hour/id1173888893?mt=2
+And if you like elegant and stylish House music subscribe to iTunes podcast: https://itunes.apple.com/us/podcast/happy-hour/id1173888893?mt=2
 
 ## Architecture
     The application is built with serverless approach in mind and leverages Google Cloud solutions.

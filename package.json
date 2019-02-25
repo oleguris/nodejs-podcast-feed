@@ -19,11 +19,12 @@
   "dependencies": {
     "@google-cloud/datastore": "^2.0.0",
     "supertest": "^3.0.0",
+    "useragent": "^2.3.0",
     "xmlbuilder": "^10.1.1"
   },
   "devDependencies": {
     "@google-cloud/functions-emulator": "^1.0.0-beta.4",
-    "@google-cloud/nodejs-repo-tools": "^3.0.0",
+    "@google-cloud/nodejs-repo-tools": "^3.2.0",
     "ava": "0.25.0",
     "proxyquire": "2.1.0",
     "sinon": "7.2.3",
