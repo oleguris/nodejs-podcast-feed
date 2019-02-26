@@ -21,7 +21,7 @@ const Datastore = require('@google-cloud/datastore');
 const datastore = Datastore();
 
 const createiTunesRSSFeed = require("./iTunesRSSFeed").createiTunesRSSFeed;
-const logRequestCall = require("./RequestLogger").logRequestCall;
+const requestLogger = require("./RequestLogger");
 
 /**
  * Retrieves all podcasts and returns RSS feed in XML format.
@@ -33,7 +33,7 @@ const logRequestCall = require("./RequestLogger").logRequestCall;
  * @param {object} res Cloud Function response context.
  * @param {object} injectedDatastore Injected Google Cloud datastore implementation, required for Unit test mocking
  */
-exports.getitunesrssfeed = (req, res, injectedDatastore = datastore) => {
+exports.getitunesrssfeed = (req, res, injectedRequestLogger = requestLogger, injectedDatastore = datastore) => {
   const podcastEpisodeKind = 'podcast_episode';
   const podcastMetadataKind = 'podcast';
   const podcastMetadataKey = 'happy-hour-podcast';
@@ -70,7 +70,9 @@ exports.getitunesrssfeed = (req, res, injectedDatastore = datastore) => {
 
     const xml = createiTunesRSSFeed(podcastMetadata, podcastEpisodeItems);
 
-    logRequestCall(req, 200, 'getitunesrssfeed', injectedDatastore);
+    console.log('injectedRequestLogger: ', injectedRequestLogger);
+
+    injectedRequestLogger.logRequestCall(req, 200, 'getitunesrssfeed', injectedDatastore);
 
     res.set('Content-Type', 'text/xml; charset=utf-8');
     res.set('Cache-Control', 's-maxage=0, max-age=0');

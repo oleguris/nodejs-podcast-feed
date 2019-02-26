@@ -29,9 +29,11 @@ exports.logRequestCall = (req, status, functionName, injectedDatastore) => {
         data: requestCallEntitry,
     };
 
-    injectedDatastore.insert(entity).then(() => {
-        console.log('RequestCall logged successfully')
+    return injectedDatastore.insert(entity).then(() => {
+        console.log('RequestCall logged successfully');
+        return 0;
     }).catch(err => {
         console.error(err);
+        return 1;
     });
 }

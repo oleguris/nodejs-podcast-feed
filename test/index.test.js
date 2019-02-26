@@ -163,8 +163,12 @@ test.cb(`getitunesrssfeed: should return a valid XML RSS feed`, t => {
   res.status.withArgs(200).returns(responseStatusStub);
 
   // Mock response.set() function to verify it was called 5 times
-  var mockResponse = sinon.mock(res);
+  let mockResponse = sinon.mock(res);
   mockResponse.expects('set').exactly(5);
+
+  let requestLogger = {logRequestCall: () => {}};
+  const mockRequestLogger = sinon.mock(requestLogger);
+  mockRequestLogger.expects('logRequestCall').once();
 
   datastoreRunQueryStub.resolves([datastorePodcastItems]);
 
@@ -175,11 +179,13 @@ test.cb(`getitunesrssfeed: should return a valid XML RSS feed`, t => {
   t.plan(2);
 
   // Call tested function
-  getitunesrssfeed(req, res, datastore).then(()=>{
+  getitunesrssfeed(req, res, requestLogger, datastore).then(()=>{
     console.log('test assertion');
 
     // Verify response.set() mocked function was called 5 times
     mockResponse.verify();
+
+    mockRequestLogger.verify();
 
     // Verify behavior of tested function
     t.true(responseStatusStub.send.calledOnce);
@@ -200,8 +206,12 @@ test.cb(`getitunesrssfeed: should reject and return 500 when podcast metadata no
   res.status.withArgs(500).returns(responseStatusStub);
 
   // Mock response.set() function to verify it was not called
-  var mockResponse = sinon.mock(res);
+  let mockResponse = sinon.mock(res);
   mockResponse.expects('set').never();
+
+  let requestLogger = {logRequestCall: () => {}};
+  const mockRequestLogger = sinon.mock(requestLogger);
+  mockRequestLogger.expects('logRequestCall').never();
 
   datastoreRunQueryStub.resolves([datastorePodcastItems]);
 
@@ -213,11 +223,13 @@ test.cb(`getitunesrssfeed: should reject and return 500 when podcast metadata no
   t.plan(2);
 
   // Call tested function
-  getitunesrssfeed(req, res, datastore).catch(()=>{
+  getitunesrssfeed(req, res, requestLogger, datastore).catch(()=>{
     console.log('test assertion');
 
     // Verify response.set() mocked function was called 5 times
     mockResponse.verify();
+
+    mockRequestLogger.verify();
 
     // Verify behavior of tested function
     t.true(responseStatusStub.send.calledOnce);
@@ -239,8 +251,12 @@ test.cb(`getitunesrssfeed: should reject and return 500 when podcast episodes no
   res.status.withArgs(500).returns(responseStatusStub);
 
   // Mock response.set() function to verify it was not called
-  var mockResponse = sinon.mock(res);
+  let mockResponse = sinon.mock(res);
   mockResponse.expects('set').never();
+
+  let requestLogger = {logRequestCall: () => {}};
+  const mockRequestLogger = sinon.mock(requestLogger);
+  mockRequestLogger.expects('logRequestCall').never();
 
   datastoreRunQueryStub.resolves([]);
 
@@ -252,12 +268,14 @@ test.cb(`getitunesrssfeed: should reject and return 500 when podcast episodes no
   t.plan(2);
 
   // Call tested function
-  getitunesrssfeed(req, res, datastore).catch(()=>{
+  getitunesrssfeed(req, res, requestLogger, datastore).catch(()=>{
     console.log('test assertion');
 
     // Verify response.set() mocked function was called 5 times
     mockResponse.verify();
 
+    mockRequestLogger.verify();
+    
     // Verify behavior of tested function
     t.true(responseStatusStub.send.calledOnce);
     
